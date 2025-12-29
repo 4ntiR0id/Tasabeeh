@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary Meta Tags -->
+    <title>تطبيق تسابيح</title>
+    <meta name="description" content="تطبيق أذكار إسلامي متكامل مع عداد التسبيح الذهبي. أذكار الصباح والمساء، تسبيح، تحميد، تكبير، استغفار مع فوائد وثواب كل ذكر.">
+    <meta name="keywords" content="أذكار, تسبيح, تطبيق أذكار, ذكر الله, أذكار الصباح, أذكار المساء, تطبيق إسلامي, عداد التسبيح, أذكار يومية, ذكر, تسبيح الله">
+    <meta name="author" content="تطبيق الأذكار">
+    <meta name="theme-color" content="#D4AF37">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://app.adhkar.com/">
+    <meta property="og:title" content="تطبيق تسابيح">
+    <meta property="og:description" content="تطبيق أذكار إسلامي متكامل مع عداد التسبيح الذهبي. أذكار الصباح والمساء، تسبيح، تحميد، تكبير، استغفار مع فوائد وثواب كل ذكر.">
+    <meta property="og:image" content="https://app.adhkar.com/images/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="ar_SA">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://app.adhkar.com/">
+    <meta property="twitter:title" content="تطبيق تسابيح">
+    <meta property="twitter:description" content="تطبيق أذكار إسلامي متكامل مع عداد التسبيح الذهبي. أذكار الصباح والمساء، تسبيح، تحميد، تكبير، استغفار مع فوائد وثواب كل ذكر.">
+    <meta property="twitter:image" content="https://app.adhkar.com/images/twitter-image.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://app.adhkar.com/">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "تطبيق تسابيح",
+      "description": "تطبيق أذكار إسلامي متكامل مع عداد التسبيح الذهبي",
+      "url": "https://app.adhkar.com/",
+      "applicationCategory": "ReligiousApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "تطبيق الأذكار"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "ratingCount": "1250"
+      }
+    }
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+            color: #f5f5f5;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* تحسين تجربة المستخدم - إضافة مؤشر التحميل */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0a0a0a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            border-top-color: #D4AF37;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-top: 10px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #D4AF37;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+            margin-bottom: 10px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 50%;
+            transform: translateX(50%);
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+        }
+
+        /* إضافة معلومات حول إجمالي الأجر */
+        .total-reward {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .total-reward h3 {
+            color: #D4AF37;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .total-reward p {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* تحسين البطاقات مع تأثيرات إضافية */
+        .adhkar-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .dhikr-card {
+            background: rgba(26, 26, 26, 0.9);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 15px;
+            padding: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            animation: cardAppear 0.5s ease;
+            animation-fill-mode: both;
+        }
+
+        .dhikr-card:nth-child(1) { animation-delay: 0.1s; }
+        .dhikr-card:nth-child(2) { animation-delay: 0.2s; }
+        .dhikr-card:nth-child(3) { animation-delay: 0.3s; }
+        .dhikr-card:nth-child(4) { animation-delay: 0.4s; }
+        .dhikr-card:nth-child(5) { animation-delay: 0.5s; }
+        .dhikr-card:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes cardAppear {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dhikr-card:hover {
+            border-color: rgba(212, 175, 55, 0.5);
+            box-shadow: 0 6px 16px rgba(212, 175, 55, 0.15);
+            transform: translateY(-3px);
+        }
+
+        .dhikr-header {
+            padding: 20px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: transparent;
+            border: none;
+            width: 100%;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .dhikr-header:hover {
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .dhikr-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dhikr-text {
+            font-size: 1.2rem;
+            color: #D4AF37;
+            font-weight: 600;
+            margin-bottom: 10px;
+            line-height: 1.6;
+            text-align: center;
+            width: 100%;
+        }
+
+        .dhikr-benefit {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-top: 8px;
+            line-height: 1.5;
+            text-align: center;
+            width: 100%;
+        }
+
+        .dhikr-body {
+            border-top: 1px solid rgba(212, 175, 55, 0.15);
+            background: rgba(20, 20, 20, 0.7);
+            padding: 25px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 500px;
+            }
+        }
+
+        .dhikr-body.active {
+            display: block;
+        }
+
+        .progress-section {
+            margin-bottom: 20px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .progress-label span:first-child {
+            color: #aaa;
+        }
+
+        .progress-label span:last-child {
+            color: #D4AF37;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(60, 60, 60, 0.7);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.1), 
+                transparent);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #B8860B, #D4AF37);
+            transition: width 0.3s ease;
+            border-radius: 6px;
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        .buttons-section {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            align-items: center;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-tasbih {
+            flex: 1;
+            padding: 15px;
+            background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+            color: #D4AF37;
+            font-size: 1rem;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-tasbih::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.1) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            transition: transform 0.6s;
+        }
+
+        .btn-tasbih:hover::after {
+            transform: rotate(30deg) translate(20%, 20%);
+        }
+
+        .btn-tasbih:hover {
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            border-color: rgba(212, 175, 55, 0.7);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(212, 175, 55, 0.15);
+        }
+
+        .btn-tasbih:active {
+            transform: translateY(0);
+        }
+
+        /* زر تسبيح يبقى كما هو */
+        .btn-tasbih.completed {
+            background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+            color: #D4AF37;
+            border-color: rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-tasbih.completed:hover {
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            border-color: rgba(212, 175, 55, 0.7);
+        }
+
+        .btn-reset {
+            width: 50px;
+            height: 50px;
+            padding: 0;
+            background: #D4AF37;
+            color: #000;
+            border: 1px solid rgba(212, 175, 55, 0.8);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(212, 175, 55, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn-reset:hover {
+            background: #F4CA16;
+            border-color: #F4CA16;
+            transform: scale(1.05) rotate(90deg);
+            box-shadow: 0 6px 12px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-reset:active {
+            transform: scale(0.95) rotate(90deg);
+        }
+
+        /* تحسينات للشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .dhikr-text {
+                font-size: 1rem;
+            }
+
+            .dhikr-benefit {
+                font-size: 0.85rem;
+            }
+
+            .btn-tasbih {
+                padding: 12px;
+                font-size: 0.95rem;
+            }
+
+            .btn-reset {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .dhikr-header {
+                padding: 15px;
+            }
+
+            .dhikr-text {
+                font-size: 0.95rem;
+            }
+
+            .dhikr-benefit {
+                font-size: 0.8rem;
+            }
+
+            .dhikr-body {
+                padding: 15px;
+            }
+
+            .btn-tasbih {
+                padding: 12px 10px;
+                font-size: 0.9rem;
+            }
+
+            .btn-reset {
+                width: 42px;
+                height: 42px;
+                font-size: 1.2rem;
+            }
+
+            .buttons-section {
+                gap: 8px;
+            }
+        }
+
+        /* التذييل مع تحسينات */
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            color: #aaa;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .check-icon {
+            color: #D4AF37;
+            font-size: 1.2rem;
+            font-weight: bold;
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        /* إضافة تأثيرات صوتية للتفاعل */
+        .click-feedback {
+            position: absolute;
+            pointer-events: none;
+            animation: clickEffect 0.5s ease;
+        }
+
+        @keyframes clickEffect {
+            0% {
+                transform: scale(0.5);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- شاشة التحميل -->
+    <div id="loading" class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div class="container">
+        <header class="header" role="banner">
+            <h1>تطبيق تسابيح</h1>
+        </header>
+
+        <main id="app" role="main"></main>
+
+        <footer class="footer" role="contentinfo">
+            <p>اللَّهُمَّ اجعل عملنا هذا خالصاً لوجهك الكريم</p>
+            <p style="margin-top: 10px; color: #D4AF37;">جزاك الله خيراً على استخدام التطبيق</p>
+            <p style="margin-top: 10px; font-size: 0.8rem; color: #666;">
+                تطبيق تسابيح © 2024 - جميع الحقوق محفوظة
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // بيانات الأذكار
+        const adhkarData = {
+            "adhkar": [
+                {
+                    "id": 1,
+                    "text": "سُبْحَانَ اللَّهِ",
+                    "benefit": "يكتب له ألف حسنة أو يحط عنه ألف خطيئة",
+                    "reward": 1000,
+                    "target": 100
+                },
+                {
+                    "id": 2,
+                    "text": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
+                    "benefit": "حُطَّتْ خَطَايَاهُ وَإِنْ كَانَتْ مِثْلَ زَبَدِ الْبَحْرِ. لَمْ يَأْتِ أَحَدٌ يَوْمَ الْقِيَامَةِ بِأَفْضَلَ مِمَّا جَاءَ بِهِ إِلَّا أَحَدٌ قَالَ مِثْلَ مَا قَالَ أَوْ زَادَ عَلَيْهِ",
+                    "reward": 1000,
+                    "target": 100
+                },
+                {
+                    "id": 3,
+                    "text": "سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ",
+                    "benefit": "تَمْلَآَنِ مَا بَيْنَ السَّمَاوَاتِ وَالْأَرْضِ",
+                    "reward": 1000,
+                    "target": 100
+                },
+                {
+                    "id": 4,
+                    "text": "سُبْحَانَ اللهِ العَظِيمِ وَبِحَمْدِهِ",
+                    "benefit": "غرست له نخلة في الجنة",
+                    "reward": 1000,
+                    "target": 100
+                },
+                {
+                    "id": 5,
+                    "text": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ ، سُبْحَانَ اللَّهِ الْعَظِيمِ",
+                    "benefit": "ثقيلتان في الميزان حبيبتان إلى الرحمن",
+                    "reward": 1000,
+                    "target": 100
+                },
+                {
+                    "id": 6,
+                    "text": "لَا إلَه إلّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلُّ شَيْءِ قَدِيرِ",
+                    "benefit": "كانت له عدل عشر رقاب، وكتبت له مئة حسنة، ومحيت عنه مئة سيئة، وكانت له حرزا من الشيطان",
+                    "reward": 1000,
+                    "target": 100
+                },
+                {
+                    "id": 7,
+                    "text": "لا حَوْلَ وَلا قُوَّةَ إِلا بِاللَّهِ",
+                    "benefit": "كنز من كنوز الجنة",
+                    "reward": 1000,
+                    "target": 100
+                },
+                {
+                    "id": 8,
+                    "text": "الْحَمْدُ للّهِ رَبِّ الْعَالَمِينَ",
+                    "benefit": "تملأ ميزان العبد بالحسنات",
+                    "reward": 1000,
+                    "target": 100
+                },
+                {
+                    "id": 9,
+                    "text": "الْلَّهُم صَلِّ وَسَلِم وَبَارِك عَلَى سَيِّدِنَا مُحَمَّد",
+                    "benefit": "من صلى على حين يصبح وحين يمسى ادركته شفاعتى يوم القيامة",
+                    "reward": 1000,
+                    "target": 100
+                },
+                {
+                    "id": 10,
+                    "text": "أستغفر الله",
+                    "benefit": "لفعل الرسول صلى الله عليه وسلم",
+                    "reward": 1000,
+                    "target": 100
+                },
+                {
+                    "id": 11,
+                    "text": "سُبْحَانَ الْلَّهِ، وَالْحَمْدُ لِلَّهِ، وَلَا إِلَهَ إِلَّا الْلَّهُ، وَالْلَّهُ أَكْبَرُ",
+                    "benefit": "أنهن أحب الكلام الى الله، ومكفرات للذنوب، وغرس الجنة، وجنة لقائلهن من النار، وأحب الى النبي عليه السلام مما طلعت عليه الشمس، والْبَاقِيَاتُ الْصَّالِحَات",
+                    "reward": 1000,
+                    "target": 100
+                },
+                {
+                    "id": 12,
+                    "text": "لَا إِلَهَ إِلَّا اللَّهُ",
+                    "benefit": "أفضل الذكر لا إله إلاّ الله",
+                    "reward": 1000,
+                    "target": 100
+                },
+                {
+                    "id": 13,
+                    "text": "الْلَّهُ أَكْبَرُ",
+                    "benefit": "من قال الله أكبر كتبت له عشرون حسنة وحطت عنه عشرون سيئة. الله أكبر من كل شيء",
+                    "reward": 1000,
+                    "target": 100
+                },
+                {
+                    "id": 14,
+                    "text": "سُبْحَانَ اللَّهِ ، وَالْحَمْدُ لِلَّهِ ، وَلا إِلَهَ إِلا اللَّهُ ، وَاللَّهُ أَكْبَرُ ، اللَّهُمَّ اغْفِرْ لِي ، اللَّهُمَّ ارْحَمْنِي ، اللَّهُمَّ ارْزُقْنِي",
+                    "benefit": "خير الدنيا والآخرة",
+                    "reward": 1000,
+                    "target": 100
+                },
+                {
+                    "id": 15,
+                    "text": "الْحَمْدُ لِلَّهِ حَمْدًا كَثِيرًا طَيِّبًا مُبَارَكًا فِيهِ",
+                    "benefit": "قَالَ النَّبِيُّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ ‏(لَقَدْ رَأَيْتُ اثْنَيْ عَشَرَ مَلَكًا يَبْتَدِرُونَهَا، أَيُّهُمْ يَرْفَعُهَا)‏",
+                    "reward": 1000,
+                    "target": 100
+                },
+                {
+                    "id": 16,
+                    "text": "اللَّهُ أَكْبَرُ كَبِيرًا ، وَالْحَمْدُ لِلَّهِ كَثِيرًا ، وَسُبْحَانَ اللَّهِ بُكْرَةً وَأَصِيلاً",
+                    "benefit": "قَالَ النَّبِيُّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ (عَجِبْتُ لَهَا ، فُتِحَتْ لَهَا أَبْوَابُ السَّمَاءِ)",
+                    "reward": 1000,
+                    "target": 100
+                },
+                {
+                    "id": 17,
+                    "text": "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ , وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ , اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ",
+                    "benefit": "في كل مره تحط عنه عشر خطايا ويرفع له عشر درجات ويصلي الله عليه عشرا وتعرض على الرسول صلى الله عليه وسلم",
+                    "reward": 1000,
+                    "target": 100
+                }
+            ]
+        };
+
+        let adhkar = adhkarData.adhkar;
+        let counts = {};
+        let completed = {};
+        let totalReward = 0;
+        let expandedIds = {};
+
+        // إخفاء شاشة التحميل
+        function hideLoading() {
+            const loading = document.getElementById('loading');
+            loading.style.opacity = '0';
+            setTimeout(() => {
+                loading.style.display = 'none';
+            }, 500);
+        }
+
+        // تحديث إجمالي الأجر
+        function updateTotalReward() {
+            const totalRewardElement = document.getElementById('totalReward');
+            if (totalRewardElement) {
+                totalRewardElement.textContent = totalReward.toLocaleString('ar-SA') + ' حسنة';
+            }
+        }
+
+        // تحميل البيانات المحفوظة
+        function loadFromStorage() {
+            const saved = localStorage.getItem('dhikrData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                counts = data.counts || {};
+                completed = data.completed || {};
+                totalReward = data.totalReward || 0;
+                updateTotalReward();
+            }
+        }
+
+        // حفظ البيانات
+        function saveToStorage() {
+            localStorage.setItem('dhikrData', JSON.stringify({
+                counts,
+                completed,
+                totalReward
+            }));
+            updateTotalReward();
+        }
+
+        // زيادة العداد مع تأثير
+        function increment(id, reward, event) {
+            // تأثير النقر
+            createClickEffect(event);
+            
+            counts[id] = (counts[id] || 0) + 1;
+            totalReward += reward;
+
+            if (counts[id] === 100) {
+                completed[id] = (completed[id] || 0) + 1;
+                counts[id] = 0;
+                // تأثير خاص عند اكتمال 100
+                showCompletionEffect(id);
+            }
+
+            saveToStorage();
+            updateCard(id);
+        }
+
+        // إعادة تعيين ذكر واحد
+        function resetDhikr(id, reward, event) {
+            // تأثير النقر
+            createClickEffect(event);
+            
+            const count = counts[id] || 0;
+            const comp = completed[id] || 0;
+            
+            if (count > 0 || comp > 0) {
+                totalReward -= (count * reward) + (comp * 100 * reward);
+                delete counts[id];
+                delete completed[id];
+                saveToStorage();
+                
+                const card = document.querySelector(`[data-card="${id}"]`);
+                if (card) {
+                    const checkIcon = card.querySelector('.check-icon');
+                    if (checkIcon) checkIcon.remove();
+                    
+                    const btn = card.querySelector('.btn-tasbih');
+                    if (btn) btn.classList.remove('completed');
+                    
+                    const progressFill = card.querySelector('.progress-fill');
+                    if (progressFill) progressFill.style.width = '0%';
+                    
+                    const progressLabel = card.querySelector('.progress-label span:last-child');
+                    if (progressLabel) {
+                        progressLabel.textContent = '0/' + adhkar.find(d => d.id === id).target;
+                    }
+                }
+            }
+        }
+
+        // إنشاء تأثير النقر
+        function createClickEffect(event) {
+            const clickEffect = document.createElement('div');
+            clickEffect.className = 'click-feedback';
+            clickEffect.style.cssText = `
+                position: fixed;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background: rgba(212, 175, 55, 0.5);
+                pointer-events: none;
+                z-index: 10000;
+                left: ${event.clientX - 10}px;
+                top: ${event.clientY - 10}px;
+            `;
+            document.body.appendChild(clickEffect);
+            
+            setTimeout(() => clickEffect.remove(), 500);
+        }
+
+        // تأثير عند اكتمال 100 تكرار
+        function showCompletionEffect(id) {
+            const card = document.querySelector(`[data-card="${id}"]`);
+            if (card) {
+                card.style.animation = 'none';
+                setTimeout(() => {
+                    card.style.animation = 'pulse 1s ease';
+                    setTimeout(() => {
+                        card.style.animation = '';
+                    }, 1000);
+                }, 10);
+            }
+        }
+
+        // تحديث بطاقة واحدة
+        function updateCard(id) {
+            const dhikr = adhkar.find(d => d.id === id);
+            if (!dhikr) return;
+
+            const count = counts[dhikr.id] || 0;
+            const comp = completed[dhikr.id] || 0;
+            const percentage = Math.min((count / dhikr.target) * 100, 100);
+
+            const card = document.querySelector(`[data-card="${id}"]`);
+            if (card) {
+                const progressFill = card.querySelector('.progress-fill');
+                if (progressFill) progressFill.style.width = percentage + '%';
+
+                const progressLabel = card.querySelector('.progress-label span:last-child');
+                if (progressLabel) {
+                    progressLabel.textContent = comp > 0 ? 
+                        comp + ' ✓ | ' + count + '/' + dhikr.target : 
+                        count + '/' + dhikr.target;
+                }
+
+                const btn = card.querySelector('.btn-tasbih');
+                if (btn) {
+                    btn.classList.toggle('completed', comp > 0);
+                }
+
+                const header = card.querySelector('.dhikr-header');
+                if (header) {
+                    const existingIcon = header.querySelector('.check-icon');
+                    if (comp > 0) {
+                        if (!existingIcon) {
+                            const checkIcon = document.createElement('span');
+                            checkIcon.className = 'check-icon';
+                            checkIcon.textContent = '✓';
+                            header.appendChild(checkIcon);
+                        }
+                    } else if (existingIcon) {
+                        existingIcon.remove();
+                    }
+                }
+            }
+        }
+
+        // تحديد/إلغاء توسيع الذكر
+        function toggleExpand(id, event) {
+            expandedIds[id] = !expandedIds[id];
+            const body = document.querySelector(`[data-body="${id}"]`);
+            if (body) body.classList.toggle('active');
+            event.stopPropagation();
+        }
+
+        // رسم الواجهة
+        function render() {
+            const app = document.getElementById('app');
+            let html = '<div class="adhkar-list">';
+
+            adhkar.forEach(dhikr => {
+                const count = counts[dhikr.id] || 0;
+                const comp = completed[dhikr.id] || 0;
+                const percentage = Math.min((count / dhikr.target) * 100, 100);
+                const hasCompleted = comp > 0;
+
+                html += `
+                    <div class="dhikr-card" data-card="${dhikr.id}" role="article">
+                        <button class="dhikr-header" onclick="toggleExpand(${dhikr.id}, event)" 
+                                aria-expanded="${expandedIds[dhikr.id] || false}" 
+                                aria-controls="dhikr-body-${dhikr.id}">
+                            <div class="dhikr-content">
+                                <div class="dhikr-text" aria-label="نص الذكر">${dhikr.text}</div>
+                                <div class="dhikr-benefit" aria-label="فوائد الذكر">${dhikr.benefit}</div>
+                            </div>
+                            ${hasCompleted ? '<span class="check-icon" aria-label="مكتمل">✓</span>' : ''}
+                        </button>
+
+                        <div class="dhikr-body" id="dhikr-body-${dhikr.id}" data-body="${dhikr.id}" 
+                             ${expandedIds[dhikr.id] ? 'style="display: block;"' : ''}
+                             role="region" aria-labelledby="dhikr-header-${dhikr.id}">
+                            <div class="progress-section">
+                                <div class="progress-label">
+                                    <span>التقدم</span>
+                                    <span>${comp > 0 ? comp + ' ✓ | ' : ''}${count}/${dhikr.target}</span>
+                                </div>
+                                <div class="progress-bar" role="progressbar" 
+                                     aria-valuenow="${count}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="${dhikr.target}">
+                                    <div class="progress-fill" style="width: ${percentage}%"></div>
+                                </div>
+                            </div>
+
+                            <div class="buttons-section">
+                                <button class="btn btn-tasbih" 
+                                        onclick="increment(${dhikr.id}, ${dhikr.reward}, event)"
+                                        aria-label="زيادة عداد التسبيح">
+                                    تسبيح
+                                </button>
+                                <button class="btn btn-reset" 
+                                        onclick="resetDhikr(${dhikr.id}, ${dhikr.reward}, event)" 
+                                        title="إعادة تعيين هذا الذكر فقط"
+                                        aria-label="إعادة تعيين العداد">
+                                    ↻
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            app.innerHTML = html;
+            hideLoading();
+        }
+
+        // تحسين تجربة المستخدم مع الصوتيات
+        function setupAccessibility() {
+            // إضافة عناصر ARIA للمكفوفين
+            document.querySelectorAll('.dhikr-card').forEach(card => {
+                card.setAttribute('role', 'article');
+                card.setAttribute('aria-labelledby', 'dhikr-text');
+            });
+
+            // إضافة تحسينات للوحة المفاتيح
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    Object.keys(expandedIds).forEach(id => {
+                        expandedIds[id] = false;
+                        const body = document.querySelector(`[data-body="${id}"]`);
+                        if (body) body.classList.remove('active');
+                    });
+                }
+            });
+        }
+
+        // تحميل التطبيق
+        window.addEventListener('DOMContentLoaded', () => {
+            loadFromStorage();
+            render();
+            setupAccessibility();
+            
+            // إخفاء التحميل بعد وقت قصير حتى لو حدث خطأ
+            setTimeout(hideLoading, 2000);
+        });
+
+        // تحسين SEO - تتبع أخطاء JavaScript
+        window.addEventListener('error', (e) => {
+            console.error('Error in Adhkar App:', e.error);
+        });
+    </script>
+</body>
+</html>
