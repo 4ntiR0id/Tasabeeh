@@ -16,9 +16,10 @@
     <meta property="og:url" content="https://app.adhkar.com/">
     <meta property="og:title" content="تطبيق تسابيح">
     <meta property="og:description" content="تطبيق أذكار إسلامي متكامل مع عداد التسبيح الذهبي. أذكار الصباح والمساء، تسبيح، تحميد، تكبير، استغفار مع فوائد وثواب كل ذكر.">
-    <meta property="og:image" content="https://app.adhkar.com/images/og-image.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    <meta property="og:image" content="icon.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
     <meta property="og:locale" content="ar_SA">
     
     <!-- Twitter -->
@@ -32,8 +33,8 @@
     <link rel="canonical" href="https://app.adhkar.com/">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
     
     <!-- Structured Data for SEO -->
     <script type="application/ld+json">
@@ -125,6 +126,25 @@
             margin-bottom: 10px;
             position: relative;
             padding-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
         }
 
         .header h1::after {
@@ -559,18 +579,18 @@
 
     <div class="container">
         <header class="header" role="banner">
-            <h1>تطبيق تسابيح</h1>
+            <h1>
+                <img src="icon.png" alt="تطبيق تسابيح" class="header-logo">
+            </h1>
         </header>
 
         <main id="app" role="main"></main>
 
         <footer class="footer" role="contentinfo">
-            <p>اللَّهُمَّ اجعل عملنا هذا خالصاً لوجهك الكريم</p>
-            <p style="margin-top: 10px; color: #D4AF37;">جزاك الله خيراً على استخدام التطبيق</p>
-            <p style="margin-top: 10px; font-size: 0.8rem; color: #666;">
-                تطبيق تسابيح © 2024 - جميع الحقوق محفوظة
-            </p>
+            <p>اللَّهُمَّ اجعل هذا العمل خالصاً لوجهك الكريم</p>
+            <p style="margin-top: 10px; font-size: 0.8rem; color: #D4AF37;">ALL RIGHTS RESERVED © TASABEEH 2026</p>
         </footer>
+        
     </div>
 
     <script>
@@ -691,7 +711,7 @@
                 },
                 {
                     "id": 17,
-                    "text": "اللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِ سَيِّدِنَا مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى سَيِّدِنَا إِبْرَاهِيمَ وَعَلَى آلِ سَيِّدِنَا إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ , اللَّهُمَّ بَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِ سَيِّدِنَا مُحَمَّدٍ كَمَا بَارَكْتَ عَلَى سَيِّدِنَا إِبْرَاهِيمَ وَعَلَى آلِ سَيِّدِنَا إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ",
+                    "text": "اللَّهُمَّ صَلِّ عَلَى سَيِّدُنَا مُحَمَّدٍ وَعَلَى آلِ سَيِّدُنَا مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى سَيِّدُنَا إِبْرَاهِيمَ وَعَلَى آلِ سَيِّدُنَا إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ , اللَّهُمَّ بَارِكْ عَلَى سَيِّدُنَا مُحَمَّدٍ وَعَلَى آلِ سَيِّدُنَا مُحَمَّدٍ كَمَا بَارَكْتَ عَلَى سَيِّدُنَا إِبْرَاهِيمَ وَعَلَى آلِ سَيِّدُنَا إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ",
                     "benefit": "في كل مره تحط عنه عشر خطايا ويرفع له عشر درجات ويصلي الله عليه عشرا وتعرض على الرسول صلى الله عليه وسلم",
                     "reward": 1000,
                     "target": 100
@@ -963,8 +983,28 @@
             });
         }
 
+        // تتبع زيارات المستخدم
+        function trackVisitor() {
+            const visitorData = {
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                language: navigator.language,
+                screen: `${window.innerWidth}x${window.innerHeight}`,
+                referrer: document.referrer || 'مباشر'
+            };
+            
+            // حفظ بيانات الزيارة
+            let visits = JSON.parse(localStorage.getItem('appVisits') || '[]');
+            visits.push(visitorData);
+            if (visits.length > 1000) {
+                visits = visits.slice(-1000);
+            }
+            localStorage.setItem('appVisits', JSON.stringify(visits));
+        }
+
         // تحميل التطبيق
         window.addEventListener('DOMContentLoaded', () => {
+            trackVisitor();
             loadFromStorage();
             render();
             setupAccessibility();

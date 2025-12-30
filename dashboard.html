@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - تطبيق التسابيح</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #D4AF37;
+            --primary-dark: #B8941D;
+            --bg-dark: #0a0a0a;
+            --bg-darker: #050505;
+            --card-bg: rgba(26, 26, 26, 0.95);
+            --border-color: rgba(212, 175, 55, 0.2);
+            --text-primary: #f5f5f5;
+            --text-secondary: #aaa;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-purple: #8b5cf6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-darker) 0%, #1a1a1a 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* Header */
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: slideDown 0.8s ease;
+        }
+
+        .dashboard-header h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--primary), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .dashboard-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+            animation: fadeIn 1s ease 0.2s both;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.1);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-change.positive {
+            color: var(--accent-green);
+        }
+
+        .stat-change.negative {
+            color: var(--accent-red);
+        }
+
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+            animation: fadeIn 1s ease 0.4s both;
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .chart-container:hover {
+            border-color: var(--primary);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.1);
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Real-time Activity */
+        .activity-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 40px;
+            animation: fadeIn 1s ease 0.6s both;
+        }
+
+        .activity-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .activity-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            animation: slideIn 0.4s ease;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 15px;
+            font-size: 1.2rem;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-text {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .activity-time {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            animation: fadeIn 1s ease 0.3s both;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--bg-dark);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        /* Filter Tags */
+        .filter-tags {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 8px 16px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .tag:hover,
+        .tag.active {
+            background: rgba(212, 175, 55, 0.3);
+            border-color: var(--primary);
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Scrollbar Styling */
+        .activity-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .activity-list::-webkit-scrollbar-track {
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 10px;
+        }
+
+        .activity-list::-webkit-scrollbar-thumb {
+            background: rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+        }
+
+        .activity-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(212, 175, 55, 0.5);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .modal-body {
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-header h1 {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* Loading Indicator */
+        .loading {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--primary);
+            margin: 0 5px;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .stat-card.color-blue {
+            border-top: 3px solid var(--accent-blue);
+        }
+
+        .stat-card.color-green {
+            border-top: 3px solid var(--accent-green);
+        }
+
+        .stat-card.color-red {
+            border-top: 3px solid var(--accent-red);
+        }
+
+        .stat-card.color-purple {
+            border-top: 3px solid var(--accent-purple);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <h1>📊 لوحة التحكم</h1>
+            <p>متابعة إحصائيات تطبيق التسابيح وأداء الزيارات</p>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button class="btn btn-primary" onclick="addVisitor()">+ إضافة زائر</button>
+            <button class="btn btn-secondary" onclick="exportData()">📥 تحميل التقرير</button>
+            <button class="btn btn-danger" onclick="openResetModal()">⚠️ إعادة تعيين</button>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card color-blue">
+                <div class="stat-icon">👥</div>
+                <div class="stat-label">إجمالي الزيارات</div>
+                <div class="stat-value" id="totalVisitors">0</div>
+                <div class="stat-change positive">
+                    <span id="visitChange">↑ 0</span> اليوم
+                </div>
+            </div>
+
+            <div class="stat-card color-green">
+                <div class="stat-icon">📱</div>
+                <div class="stat-label">الزيارات اليوم</div>
+                <div class="stat-value" id="todayVisitors">0</div>
+                <div class="stat-change positive">
+                    <span id="percentChange">0%</span> من الإجمالي
+                </div>
+            </div>
+
+            <div class="stat-card color-purple">
+                <div class="stat-icon">⏱️</div>
+                <div class="stat-label">متوسط الوقت</div>
+                <div class="stat-value" id="avgTime">0</div>
+                <div class="stat-change">
+                    <span>الدقيقة</span>
+                </div>
+            </div>
+
+            <div class="stat-card color-red">
+                <div class="stat-icon">🔗</div>
+                <div class="stat-label">معدل الارتجاع</div>
+                <div class="stat-value" id="bounceRate">0%</div>
+                <div class="stat-change negative">
+                    <span>معدل الخروج</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Tags -->
+        <div class="filter-tags">
+            <span class="tag active" onclick="filterByPeriod('all', this)">الكل</span>
+            <span class="tag" onclick="filterByPeriod('today', this)">اليوم</span>
+            <span class="tag" onclick="filterByPeriod('week', this)">هذا الأسبوع</span>
+            <span class="tag" onclick="filterByPeriod('month', this)">هذا الشهر</span>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+            <div class="chart-container">
+                <h3 class="chart-title">📈 الزيارات اليومية</h3>
+                <div class="chart-wrapper">
+                    <canvas id="dailyChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="chart-title">🎯 مصادر الزيارات</h3>
+                <div class="chart-wrapper">
+                    <canvas id="sourcesChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="chart-title">⏰ الساعات الذروة</h3>
+                <div class="chart-wrapper">
+                    <canvas id="hoursChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="chart-title">📲 أنواع الأجهزة</h3>
+                <div class="chart-wrapper">
+                    <canvas id="devicesChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Section -->
+        <div class="activity-section">
+            <h3>🔔 النشاط الحالي</h3>
+            <div class="activity-list" id="activityList">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <p>لا توجد أنشطة بعد. ابدأ بإضافة زائر</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Modal -->
+    <div class="modal" id="resetModal">
+        <div class="modal-content">
+            <div class="modal-header">⚠️ تأكيد إعادة التعيين</div>
+            <div class="modal-body">
+                <p style="color: var(--text-secondary); margin-bottom: 10px;">
+                    هل أنت متأكد من رغبتك في حذف جميع البيانات؟ لا يمكن التراجع عن هذا الإجراء.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeResetModal()">إلغاء</button>
+                <button class="btn btn-danger" onclick="resetAllData()">تأكيد الحذف</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Visitor Modal -->
+    <div class="modal" id="visitorModal">
+        <div class="modal-content">
+            <div class="modal-header">➕ إضافة زائر جديد</div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">مصدر الزيارة</label>
+                    <select class="form-input" id="sourceSelect">
+                        <option>البحث المباشر</option>
+                        <option>جوجل</option>
+                        <option>وسائل التواصل</option>
+                        <option>ارتباط خارجي</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">نوع الجهاز</label>
+                    <select class="form-input" id="deviceSelect">
+                        <option>جوال</option>
+                        <option>سطح مكتب</option>
+                        <option>لوحة</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeVisitorModal()">إلغاء</button>
+                <button class="btn btn-primary" onclick="submitVisitor()">إضافة</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Data
+        let dashboardData = {
+            visitors: [],
+            activities: []
+        };
+
+        let charts = {};
+
+        // Load data from localStorage
+        function loadData() {
+            const saved = localStorage.getItem('dashboardData');
+            if (saved) {
+                dashboardData = JSON.parse(saved);
+            } else {
+                initializeSampleData();
+            }
+            updateDashboard();
+        }
+
+        // Initialize with sample data
+        function initializeSampleData() {
+            const now = new Date();
+            const sources = ['البحث المباشر', 'جوجل', 'وسائل التواصل', 'ارتباط خارجي'];
+            const devices = ['جوال', 'سطح مكتب', 'لوحة'];
+
+            for (let i = 0; i < 30; i++) {
+                const date = new Date(now.getTime() - Math.random() * 30 * 24 * 60 * 60 * 1000);
+                dashboardData.visitors.push({
+                    id: i,
+                    source: sources[Math.floor(Math.random() * sources.length)],
+                    device: devices[Math.floor(Math.random() * devices.length)],
+                    timestamp: date.toISOString(),
+                    duration: Math.floor(Math.random() * 30) + 1
+                });
+            }
+            saveData();
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('dashboardData', JSON.stringify(dashboardData));
+        }
+
+        // Add new visitor
+        function addVisitor() {
+            document.getElementById('visitorModal').classList.add('active');
+        }
+
+        function closeVisitorModal() {
+            document.getElementById('visitorModal').classList.remove('active');
+        }
+
+        function submitVisitor() {
+            const source = document.getElementById('sourceSelect').value;
+            const device = document.getElementById('deviceSelect').value;
+            
+            const visitor = {
+                id: dashboardData.visitors.length,
+                source: source,
+                device: device,
+                timestamp: new Date().toISOString(),
+                duration: Math.floor(Math.random() * 30) + 1
+            };
+
+            dashboardData.visitors.push(visitor);
+            saveData();
+            updateDashboard();
+            closeVisitorModal();
+            showActivity(`زائر جديد من ${source}`);
+        }
+
+        function openResetModal() {
+            document.getElementById('resetModal').classList.add('active');
+        }
+
+        function closeResetModal() {
+            document.getElementById('resetModal').classList.remove('active');
+        }
+
+        function resetAllData() {
+            dashboardData = { visitors: [], activities: [] };
+            saveData();
+            updateDashboard();
+            closeResetModal();
+            showActivity('تم حذف جميع البيانات');
+        }
+
+        // Show activity
+        function showActivity(message) {
+            const activity = {
+                message: message,
+                icon: '✓',
+                time: new Date().toLocaleTimeString('ar-SA')
+            };
+            dashboardData.activities.unshift(activity);
+            if (dashboardData.activities.length > 20) {
+                dashboardData.activities.pop();
+            }
+            saveData();
+            updateActivityList();
+        }
+
+        // Update activity list
+        function updateActivityList() {
+            const list = document.getElementById('activityList');
+            if (dashboardData.activities.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>لا توجد أنشطة بعد. ابدأ بإضافة زائر</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = dashboardData.activities.map((activity, index) => `
+                <div class="activity-item" style="animation-delay: ${index * 0.05}s">
+                    <div class="activity-icon">${activity.icon}</div>
+                    <div class="activity-content">
+                        <div class="activity-text">${activity.message}</div>
+                        <div class="activity-time">${activity.time}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update Dashboard
+        function updateDashboard() {
+            updateStats();
+            updateCharts();
+            updateActivityList();
+        }
+
+        // Update Statistics
+        function updateStats() {
+            const total = dashboardData.visitors.length;
+            const today = dashboardData.visitors.filter(v => {
+                const date = new Date(v.timestamp);
+                const now = new Date();
+                return date.toDateString() === now.toDateString();
+            }).length;
+
+            const avgTime = total > 0 
+                ? Math.round(dashboardData.visitors.reduce((sum, v) => sum + v.duration, 0) / total)
+                : 0;
+
+            const bounceRate = Math.floor(Math.random() * 30) + 20;
+
+            document.getElementById('totalVisitors').textContent = total;
+            document.getElementById('todayVisitors').textContent = today;
+            document.getElementById('visitChange').textContent = `↑ ${today}`;
+            document.getElementById('percentChange').textContent = total > 0 ? Math.round((today / total) * 100) + '%' : '0%';
+            document.getElementById('avgTime').textContent = avgTime;
+            document.getElementById('bounceRate').textContent = bounceRate + '%';
+        }
+
+        // Update Charts
+        function updateCharts() {
+            updateDailyChart();
+            updateSourcesChart();
+            updateHoursChart();
+            updateDevicesChart();
+        }
+
+        function updateDailyChart() {
+            const labels = [];
+            const data = [];
+            const now = new Date();
+
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+                const dateStr = date.toLocaleDateString('ar-SA');
+                labels.push(dateStr);
+
+                const count = dashboardData.visitors.filter(v => {
+                    const vDate = new Date(v.timestamp);
+                    return vDate.toDateString() === date.toDateString();
+                }).length;
+                data.push(count);
+            }
+
+            if (charts.daily) charts.daily.destroy();
+            charts.daily = new Chart(document.getElementById('dailyChart'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'الزيارات',
+                        data: data,
+                        borderColor: 'var(--primary)',
+                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: 'var(--primary)',
+                        pointBorderColor: '#fff',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(212, 175, 55, 0.1)' },
+                            ticks: { color: 'var(--text-secondary)' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: 'var(--text-secondary)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateSourcesChart() {
+            const sources = {};
+            dashboardData.visitors.forEach(v => {
+                sources[v.source] = (sources[v.source] || 0) + 1;
+            });
+
+            const colors = ['var(--primary)', 'var(--accent-blue)', 'var(--accent-green)', 'var(--accent-red)'];
+
+            if (charts.sources) charts.sources.destroy();
+            charts.sources = new Chart(document.getElementById('sourcesChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(sources),
+                    datasets: [{
+                        data: Object.values(sources),
+                        backgroundColor: colors,
+                        borderColor: 'var(--card-bg)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: 'var(--text-primary)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateHoursChart() {
+            const hours = {};
+            for (let i = 0; i < 24; i++) {
+                hours[i] = 0;
+            }
+
+            dashboardData.visitors.forEach(v => {
+                const hour = new Date(v.timestamp).getHours();
+                hours[hour]++;
+            });
+
+            if (charts.hours) charts.hours.destroy();
+            charts.hours = new Chart(document.getElementById('hoursChart'), {
+                type: 'bar',
+                data: {
+                    labels: Array.from({length: 24}, (_, i) => i + ':00'),
+                    datasets: [{
+                        label: 'الزيارات',
+                        data: Object.values(hours),
+                        backgroundColor: 'var(--primary)',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(212, 175, 55, 0.1)' },
+                            ticks: { color: 'var(--text-secondary)' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: 'var(--text-secondary)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateDevicesChart() {
+            const devices = {};
+            dashboardData.visitors.forEach(v => {
+                devices[v.device] = (devices[v.device] || 0) + 1;
+            });
+
+            const colors = ['var(--accent-blue)', 'var(--accent-green)', 'var(--accent-purple)'];
+
+            if (charts.devices) charts.devices.destroy();
+            charts.devices = new Chart(document.getElementById('devicesChart'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(devices),
+                    datasets: [{
+                        data: Object.values(devices),
+                        backgroundColor: colors,
+                        borderColor: 'var(--card-bg)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: 'var(--text-primary)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Filter by period
+        function filterByPeriod(period, element) {
+            document.querySelectorAll('.filter-tags .tag').forEach(tag => tag.classList.remove('active'));
+            element.classList.add('active');
+            // Filter logic can be implemented here
+        }
+
+        // Export data
+        function exportData() {
+            const csv = 'التاريخ,المصدر,الجهاز,المدة (دقيقة)\n' +
+                dashboardData.visitors.map(v => 
+                    `${new Date(v.timestamp).toLocaleString('ar-SA')},${v.source},${v.device},${v.duration}`
+                ).join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'dashboard_report.csv';
+            link.click();
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', loadData);
+
+        // Add selector for device and source
+        document.addEventListener('DOMContentLoaded', () => {
+            // Convert select to proper HTML select
+            const sourceSelect = document.getElementById('sourceSelect');
+            if (sourceSelect && sourceSelect.tagName === 'SELECT') {
+                sourceSelect.innerHTML = `
+                    <option>البحث المباشر</option>
+                    <option>جوجل</option>
+                    <option>وسائل التواصل</option>
+                    <option>ارتباط خارجي</option>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
